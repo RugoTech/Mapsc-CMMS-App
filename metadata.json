@@ -1,0 +1,5 @@
+{
+  "name": "Mapsc CMMS-Demo",
+  "description": "An integrated Computerized Maintenance Management System (CMMS) for comprehensive asset, maintenance, inventory, and labor tracking. Features AI-powered diagnostics to streamline troubleshooting and improve operational efficiency.",
+  "requestFramePermissions": []
+}

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mapsc CMMS</title>
+    <script>
+      // Immediately invoked function to set the theme on initial load to prevent FOUC
+      (function() {
+        try {
+          const theme = localStorage.getItem('theme') || 'system';
+          if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (_) {}
+      })();
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+      }
+    </script>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.24.0",
+    "recharts": "https://aistudiocdn.com/recharts@^3.2.1"
+  }
+}
+</script>
+<style>
+      @media print {
+        body {
+          background-color: white !important;
+        }
+        /* Hide elements not meant for printing */
+        header, aside, .no-print {
+          display: none !important;
+        }
+        /* Ensure the main content takes up the full page */
+        main {
+            padding: 0 !important;
+            margin: 0 !important;
+            overflow: visible !important;
+        }
+        .container {
+            max-width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        @page {
+            margin: 0.75in;
+        }
+        /* Improve table printing */
+        tr {
+            page-break-inside: avoid;
+        }
+        thead {
+            display: table-header-group; /* Repeat header on each page */
+        }
+        tfoot {
+            display: table-footer-group; /* Repeat footer on each page */
+        }
+        /* Prevent card from breaking across pages and remove shadow */
+        .card-print {
+            page-break-inside: avoid;
+            box-shadow: none !important;
+            border: 1px solid #e5e7eb;
+        }
+        /* Ensure badge colors print correctly */
+        span[class*="bg-"] {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        span[class*="bg-blue-100"] { background-color: #DBEAFE !important; color: #1E40AF !important; }
+        span[class*="bg-green-100"] { background-color: #D1FAE5 !important; color: #065F46 !important; }
+        span[class*="bg-yellow-100"] { background-color: #FEF3C7 !important; color: #92400E !important; }
+        span[class*="bg-red-100"] { background-color: #FEE2E2 !important; color: #991B1B !important; }
+        span[class*="bg-gray-100"] { background-color: #F3F4F6 !important; color: #1F2937 !important; }
+      }
+    </style>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-gray-100 dark:bg-gray-900">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
