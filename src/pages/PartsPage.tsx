@@ -1,9 +1,6 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Badge } from "@/components/ui/badge";
-import { PageLoading } from "@/components/ui/loading";
-import { DataTable, DataTableHeader, DataTableHead, DataTableBody, DataTableRow, DataTableCell, DataTableEmpty } from "@/components/ui/data-table";
 
 export default function PartsPage() {
   const { tenantId } = useAuth();
@@ -13,59 +10,51 @@ export default function PartsPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("parts")
-        .select("id, code, name, part_number, quantity, min_quantity, max_quantity, unit_cost, unit_of_measure, location, is_active")
+        .select("id, code, name, part_number, quantity, min_quantity, unit_cost, unit_of_measure")
         .eq("is_active", true)
         .order("code")
-        .limit(100);
+        .limit(50);
       if (error) throw error;
       return data;
     },
     enabled: !!tenantId,
   });
 
-  if (isLoading) return <PageLoading />;
-
   return (
-    <div className="space-y-4">
-      <DataTable>
-        <DataTableHeader>
-          <DataTableHead>Code</DataTableHead>
-          <DataTableHead>Name</DataTableHead>
-          <DataTableHead>Part #</DataTableHead>
-          <DataTableHead>Location</DataTableHead>
-          <DataTableHead className="text-right">Qty</DataTableHead>
-          <DataTableHead className="text-right">Min</DataTableHead>
-          <DataTableHead className="text-right">Unit Cost</DataTableHead>
-          <DataTableHead>Stock</DataTableHead>
-        </DataTableHeader>
-        <DataTableBody>
-          {parts.length === 0 ? (
-            <DataTableEmpty message="No parts found." colSpan={8} />
-          ) : (
-            parts.map((p) => {
-              const isLow = Number(p.quantity) <= Number(p.min_quantity);
-              return (
-                <DataTableRow key={p.id}>
-                  <DataTableCell className="font-medium">{p.code}</DataTableCell>
-                  <DataTableCell>{p.name}</DataTableCell>
-                  <DataTableCell className="text-muted-foreground">{p.part_number}</DataTableCell>
-                  <DataTableCell className="text-muted-foreground">{p.location || "—"}</DataTableCell>
-                  <DataTableCell className="text-right font-medium">
-                    {p.quantity} {p.unit_of_measure}
-                  </DataTableCell>
-                  <DataTableCell className="text-right text-muted-foreground">{p.min_quantity}</DataTableCell>
-                  <DataTableCell className="text-right text-muted-foreground">${Number(p.unit_cost).toFixed(2)}</DataTableCell>
-                  <DataTableCell>
-                    <Badge variant={isLow ? "destructive" : "success"} className="text-[10px]">
-                      {isLow ? "Low" : "OK"}
-                    </Badge>
-                  </DataTableCell>
-                </DataTableRow>
-              );
-            })
-          )}
-        </DataTableBody>
-      </DataTable>
+    <div>
+      <h1 className="mb-6 text-2xl font-bold text-foreground">Parts & Inventory</h1>
+      {isLoading ? (
+        <p className="text-muted-foreground">Loading...</p>
+      ) : parts.length === 0 ? (
+        <p className="text-muted-foreground">No parts found.</p>
+      ) : (
+        <div className="overflow-x-auto rounded-lg border">
+          <table className="w-full text-sm">
+            <thead className="border-b bg-muted/50">
+              <tr>
+                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Code</th>
+                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Name</th>
+                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Part #</th>
+                <th className="px-4 py-3 text-right font-medium text-muted-foreground">Qty</th>
+                <th className="px-4 py-3 text-right font-medium text-muted-foreground">Min</th>
+                <th className="px-4 py-3 text-right font-medium text-muted-foreground">Unit Cost</th>
+              </tr>
+            </thead>
+            <tbody>
+              {parts.map((p) => (
+                <tr key={p.id} className="border-b last:border-0 hover:bg-muted/30">
+                  <td className="px-4 py-3 font-medium text-foreground">{p.code}</td>
+                  <td className="px-4 py-3 text-foreground">{p.name}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{p.part_number}</td>
+                  <td className="px-4 py-3 text-right text-foreground">{p.quantity} {p.unit_of_measure}</td>
+                  <td className="px-4 py-3 text-right text-muted-foreground">{p.min_quantity}</td>
+                  <td className="px-4 py-3 text-right text-muted-foreground">${Number(p.unit_cost).toFixed(2)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
