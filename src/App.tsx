@@ -1,11 +1,14 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import LoginPage from "@/pages/LoginPage";
 import DashboardPage from "@/pages/DashboardPage";
 import AppLayout from "@/components/layout/AppLayout";
 import WorkOrdersPage from "@/pages/WorkOrdersPage";
 import WorkRequestsPage from "@/pages/WorkRequestsPage";
 import AssetsPage from "@/pages/AssetsPage";
+import MetersPage from "@/pages/MetersPage";
+import ProceduresPage from "@/pages/ProceduresPage";
 import PartsPage from "@/pages/PartsPage";
 import PMSchedulesPage from "@/pages/PMSchedulesPage";
 import ProjectsPage from "@/pages/ProjectsPage";
@@ -38,6 +41,8 @@ function AppRoutes() {
                 <Route path="/work-orders" element={<WorkOrdersPage />} />
                 <Route path="/work-requests" element={<WorkRequestsPage />} />
                 <Route path="/assets" element={<AssetsPage />} />
+                <Route path="/meters" element={<MetersPage />} />
+                <Route path="/procedures" element={<ProceduresPage />} />
                 <Route path="/parts" element={<PartsPage />} />
                 <Route path="/pm-schedules" element={<PMSchedulesPage />} />
                 <Route path="/projects" element={<ProjectsPage />} />
@@ -53,8 +58,10 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AppRoutes />
-    </AuthProvider>
+    <TooltipProvider>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </TooltipProvider>
   );
 }

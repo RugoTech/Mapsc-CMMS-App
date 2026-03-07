@@ -1,6 +1,9 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Badge } from "@/components/ui/badge";
+import { PageLoading } from "@/components/ui/loading";
+import { DataTable, DataTableHeader, DataTableHead, DataTableBody, DataTableRow, DataTableCell, DataTableEmpty } from "@/components/ui/data-table";
 
 export default function ProjectsPage() {
   const { tenantId } = useAuth();
@@ -10,51 +13,60 @@ export default function ProjectsPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("projects")
-        .select("id, code, name, status, budget, start_date, end_date")
+        .select("id, code, name, status, budget, start_date, end_date, description")
         .eq("is_active", true)
         .order("created_at", { ascending: false })
-        .limit(50);
+        .limit(100);
       if (error) throw error;
       return data;
     },
     enabled: !!tenantId,
   });
 
+  const statusVariant = (s: string) => {
+    switch (s) {
+      case "Planning": return "info" as const;
+      case "InProgress": return "warning" as const;
+      case "Completed": return "success" as const;
+      case "Cancelled": return "destructive" as const;
+      default: return "secondary" as const;
+    }
+  };
+
+  if (isLoading) return <PageLoading />;
+
   return (
-    <div>
-      <h1 className="mb-6 text-2xl font-bold text-foreground">Projects</h1>
-      {isLoading ? (
-        <p className="text-muted-foreground">Loading...</p>
-      ) : projects.length === 0 ? (
-        <p className="text-muted-foreground">No projects found.</p>
-      ) : (
-        <div className="overflow-x-auto rounded-lg border">
-          <table className="w-full text-sm">
-            <thead className="border-b bg-muted/50">
-              <tr>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Code</th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Name</th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Status</th>
-                <th className="px-4 py-3 text-right font-medium text-muted-foreground">Budget</th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Start</th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">End</th>
-              </tr>
-            </thead>
-            <tbody>
-              {projects.map((p) => (
-                <tr key={p.id} className="border-b last:border-0 hover:bg-muted/30">
-                  <td className="px-4 py-3 font-medium text-foreground">{p.code}</td>
-                  <td className="px-4 py-3 text-foreground">{p.name}</td>
-                  <td className="px-4 py-3 capitalize text-muted-foreground">{p.status}</td>
-                  <td className="px-4 py-3 text-right text-muted-foreground">${Number(p.budget).toLocaleString()}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{p.start_date || "—"}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{p.end_date || "—"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+    <div className="space-y-4">
+      <DataTable>
+        <DataTableHeader>
+          <DataTableHead>Code</DataTableHead>
+          <DataTableHead>Name</DataTableHead>
+          <DataTableHead>Status</DataTableHead>
+          <DataTableHead className="text-right">Budget</DataTableHead>
+          <DataTableHead>Start</DataTableHead>
+          <DataTableHead>End</DataTableHead>
+        </DataTableHeader>
+        <DataTableBody>
+          {projects.length === 0 ? (
+            <DataTableEmpty message="No projects found." />
+          ) : (
+            projects.map((p) => (
+              <DataTableRow key={p.id}>
+                <DataTableCell className="font-medium">{p.code}</DataTableCell>
+                <DataTableCell>{p.name}</DataTableCell>
+                <DataTableCell>
+                  <Badge variant={statusVariant(p.status)} className="text-[10px]">
+                    {p.status}
+                  </Badge>
+                </DataTableCell>
+                <DataTableCell className="text-right text-muted-foreground">${Number(p.budget).toLocaleString()}</DataTableCell>
+                <DataTableCell className="text-muted-foreground">{p.start_date || "—"}</DataTableCell>
+                <DataTableCell className="text-muted-foreground">{p.end_date || "—"}</DataTableCell>
+              </DataTableRow>
+            ))
+          )}
+        </DataTableBody>
+      </DataTable>
     </div>
   );
 }
